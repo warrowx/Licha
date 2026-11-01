@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:GachaLife.ViewModels"
         xmlns:views="clr-namespace:GachaLife.Views"
-        Title="GachaLife" Height="700" Width="1100" MinHeight="560" MinWidth="900"
+        Title="Licha" Height="700" Width="1100" MinHeight="560" MinWidth="900"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgBrush}"
         Foreground="{StaticResource TextBrush}"
@@ -38,7 +38,7 @@
         <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}"
                 BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0">
             <DockPanel Margin="16,24">
-                <TextBlock DockPanel.Dock="Top" Text="GachaLife" FontSize="22" FontWeight="Bold"
+                <TextBlock DockPanel.Dock="Top" Text="Licha" FontSize="22" FontWeight="Bold"
                            Margin="8,0,0,28"/>
                 <TextBlock DockPanel.Dock="Bottom" Text="v0.1 MVP" Style="{StaticResource MutedText}"
                            Margin="8,0,0,0"/>
