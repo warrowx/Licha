@@ -1,0 +1,432 @@
+<UserControl x:Class="GachaLife.Views.BannersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <!-- Вкладка баннера -->
+        <Style x:Key="BannerTab" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{StaticResource CardBrush}"
+                                BorderBrush="{StaticResource LineBrush}" BorderThickness="1"
+                                CornerRadius="16" Padding="16,8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentSoftBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Кнопка выбора картинки награды -->
+        <Style x:Key="ImageButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Setter Property="Content" Value="Картинка"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="8" Padding="9,5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource CardHoverBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding CanHaveImage}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding HasImage}" Value="True">
+                    <Setter Property="Content" Value="Сменить картинку"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+
+            <TextBlock Text="Баннеры" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="Вписывайте свои награды и крутите за ◆" Style="{StaticResource MutedText}"
+                       Margin="0,4,0,24"/>
+
+            <!-- Вкладки баннеров -->
+            <ItemsControl ItemsSource="{Binding Banners}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Style="{StaticResource BannerTab}" Content="{Binding Name}"
+                                Command="{Binding SelectCommand}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Button Content="+ Новый баннер" Style="{StaticResource AccentButton}"
+                    HorizontalAlignment="Left" Margin="0,4,0,24"
+                    Command="{Binding AddBannerCommand}"/>
+
+            <!-- Нет баннеров -->
+            <TextBlock Text="Баннеров пока нет. Создайте первый кнопкой выше.">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedBanner}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!-- Выбранный баннер -->
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedBanner}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+
+                <!-- ===== Витрина баннера ===== -->
+                <Border Margin="0,0,0,16" CornerRadius="18" Padding="24" BorderThickness="1"
+                        BorderBrush="{StaticResource LineBrush}">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#2B2757" Offset="0"/>
+                            <GradientStop Color="#151823" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Слева: название, пити, кнопки -->
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0">
+                            <TextBlock Text="{Binding SelectedBanner.Name}" FontSize="26"
+                                       FontWeight="Bold" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding SelectedBanner.Pity5Text}"
+                                       Style="{StaticResource MutedText}" Margin="0,10,0,0"/>
+                            <TextBlock Text="{Binding SelectedBanner.Pity4Text}"
+                                       Style="{StaticResource MutedText}" Margin="0,2,0,0"/>
+
+                            <Button Content="{Binding SelectedBanner.PullOnceText}"
+                                    Style="{StaticResource AccentButton}" Margin="0,18,0,0"
+                                    Command="{Binding PullOnceCommand}"/>
+                            <Button Content="{Binding SelectedBanner.PullTenText}"
+                                    Style="{StaticResource AccentButton}" Margin="0,8,0,0"
+                                    Command="{Binding PullTenCommand}"/>
+
+                            <TextBlock Text="{Binding StatusMessage}" Foreground="#FF6B6B"
+                                       Margin="2,10,0,0" TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <!-- Справа: награды витрины -->
+                        <Grid Grid.Column="1" Width="400" Height="230">
+
+                            <!-- 4★ сзади, максимум три -->
+                            <ItemsControl ItemsSource="{Binding SelectedBanner.Featured4Items}"
+                                          HorizontalAlignment="Left" VerticalAlignment="Center"
+                                          Margin="160,0,0,0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="120" Height="160" Margin="-40,0,0,0" CornerRadius="14"
+                                                BorderThickness="2" BorderBrush="#B084FF" Padding="10">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                    <GradientStop Color="#33275F" Offset="0"/>
+                                                    <GradientStop Color="#1B1F2E" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="#B084FF" BlurRadius="18" ShadowDepth="0"
+                                                                  Opacity="0.35"/>
+                                            </Border.Effect>
+                                            <Grid>
+                                                <!-- Звезда-заглушка: скрывается, если есть картинка -->
+                                                <TextBlock Text="★" FontSize="56" Foreground="#B084FF" Opacity="0.25"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+
+                                                <!-- Картинка награды: показывается, только если она есть -->
+                                                <Border Width="96" Height="76" VerticalAlignment="Top"
+                                                        HorizontalAlignment="Center">
+                                                    <Border.Clip>
+                                                        <RectangleGeometry Rect="0,0,96,76" RadiusX="8" RadiusY="8"/>
+                                                    </Border.Clip>
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <Image Source="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                                </Border>
+
+                                                <StackPanel VerticalAlignment="Bottom">
+                                                    <TextBlock Text="★★★★" Foreground="#B084FF" FontSize="12"
+                                                               HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Title}" TextWrapping="Wrap"
+                                                               TextTrimming="CharacterEllipsis" MaxHeight="48"
+                                                               TextAlignment="Center" FontWeight="SemiBold" FontSize="13"
+                                                               Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- 5★ спереди -->
+                            <ItemsControl ItemsSource="{Binding SelectedBanner.Featured5Items}"
+                                          HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="170" Height="210" CornerRadius="16" BorderThickness="2"
+                                                BorderBrush="#F5C451" Padding="14">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                    <GradientStop Color="#4A3A14" Offset="0"/>
+                                                    <GradientStop Color="#1B1F2E" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="#F5C451" BlurRadius="30" ShadowDepth="0"
+                                                                  Opacity="0.45"/>
+                                            </Border.Effect>
+                                            <Grid>
+                                                <!-- Звезда-заглушка: скрывается, если есть картинка -->
+                                                <TextBlock Text="★" FontSize="96" Foreground="#F5C451" Opacity="0.25"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+
+                                                <!-- Картинка награды: показывается, только если она есть -->
+                                                <Border Width="138" Height="100" VerticalAlignment="Top"
+                                                        HorizontalAlignment="Center">
+                                                    <Border.Clip>
+                                                        <RectangleGeometry Rect="0,0,138,100" RadiusX="10" RadiusY="10"/>
+                                                    </Border.Clip>
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <Image Source="{Binding ImagePath}" Stretch="UniformToFill"/>
+                                                </Border>
+
+                                                <StackPanel VerticalAlignment="Bottom">
+                                                    <TextBlock Text="★★★★★" Foreground="#F5C451" FontSize="14"
+                                                               HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Title}" TextWrapping="Wrap"
+                                                               TextTrimming="CharacterEllipsis" MaxHeight="66"
+                                                               TextAlignment="Center" FontWeight="Bold" FontSize="16"
+                                                               Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Подсказка, если наград нет -->
+                            <TextBlock Text="Добавьте награды, и они появятся здесь"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       TextAlignment="Center" TextWrapping="Wrap" Width="240">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedBanner.Rewards.Count}" Value="0">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Результат последних круток -->
+                <ItemsControl ItemsSource="{Binding LastResults}" Margin="0,0,0,6">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Card}" Width="150" Margin="0,0,10,10"
+                                    BorderBrush="{Binding Color}" BorderThickness="2"
+                                    Loaded="ResultCard_Loaded">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Stars}" Foreground="{Binding Color}"/>
+                                    <TextBlock Text="{Binding Title}" TextWrapping="Wrap"
+                                               FontWeight="SemiBold" Margin="0,6,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                                <!-- Настройки баннера -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Настройки баннера" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Style="{StaticResource DarkTextBox}"
+                                     Text="{Binding SelectedBanner.Name, UpdateSourceTrigger=LostFocus}"/>
+                            <Button Grid.Column="1" Content="Удалить баннер" Margin="10,0,0,0"
+                                    Style="{StaticResource IconButton}"
+                                    Command="{Binding DeleteBannerCommand}"/>
+                        </Grid>
+
+                        <!-- Стоимость крутки -->
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <TextBlock Text="Стоимость одной крутки, ◆" VerticalAlignment="Center"
+                                       Style="{StaticResource MutedText}" Margin="2,0,12,0"/>
+                            <TextBox Style="{StaticResource DarkTextBox}" Width="100"
+                                     Text="{Binding SelectedBanner.PullCost, UpdateSourceTrigger=LostFocus}"/>
+                        </StackPanel>
+
+                        <!-- Шансы выпадения -->
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <TextBlock Text="Шанс 5★, %" VerticalAlignment="Center"
+                                       Style="{StaticResource MutedText}" Margin="2,0,8,0"/>
+                            <TextBox Style="{StaticResource DarkTextBox}" Width="80"
+                                     Text="{Binding SelectedBanner.Chance5Text, UpdateSourceTrigger=LostFocus}"/>
+                            <TextBlock Text="Шанс 4★, %" VerticalAlignment="Center"
+                                       Style="{StaticResource MutedText}" Margin="20,0,8,0"/>
+                            <TextBox Style="{StaticResource DarkTextBox}" Width="80"
+                                     Text="{Binding SelectedBanner.Chance4Text, UpdateSourceTrigger=LostFocus}"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding SelectedBanner.Chance3Info}"
+                                   Style="{StaticResource MutedText}" Margin="2,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Награды -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,24">
+                    <StackPanel>
+                        <TextBlock Text="Награды баннера" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                        <ItemsControl ItemsSource="{Binding SelectedBanner.Rewards}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Stars}" Foreground="{Binding Color}"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" VerticalAlignment="Center"
+                                                   TextWrapping="Wrap"/>
+                                        <Button Grid.Column="2" Style="{StaticResource ImageButton}"
+                                                Margin="0,0,4,0" Click="PickImage_Click"/>
+                                        <Button Grid.Column="3" Content="✕" Style="{StaticResource IconButton}"
+                                                Command="{Binding DeleteCommand}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Новая награда -->
+                        <Grid Margin="0,14,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Style="{StaticResource DarkTextBox}"
+                                     Text="{Binding NewRewardTitle, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding AddRewardCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Button Grid.Column="1" Content="Добавить награду" Margin="12,0,0,0"
+                                    Style="{StaticResource AccentButton}"
+                                    Command="{Binding AddRewardCommand}"/>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Style="{StaticResource Chip}" GroupName="Rarity"
+                                         Content="★★★" IsChecked="{Binding IsStar3}"/>
+                            <RadioButton Style="{StaticResource Chip}" GroupName="Rarity"
+                                         Content="★★★★" IsChecked="{Binding IsStar4}"/>
+                            <RadioButton Style="{StaticResource Chip}" GroupName="Rarity"
+                                         Content="★★★★★" IsChecked="{Binding IsStar5}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

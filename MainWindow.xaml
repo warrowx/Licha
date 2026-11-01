@@ -1,0 +1,95 @@
+﻿<Window x:Class="GachaLife.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:GachaLife.ViewModels"
+        xmlns:views="clr-namespace:GachaLife.Views"
+        Title="GachaLife" Height="700" Width="1100" MinHeight="560" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgBrush}"
+        Foreground="{StaticResource TextBrush}"
+        FontFamily="Segoe UI" FontSize="14">
+
+    <Window.Resources>
+        <!-- Какая модель какой странице соответствует -->
+        <DataTemplate DataType="{x:Type vm:TasksViewModel}">
+            <views:TasksView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:PlaceholderViewModel}">
+            <views:PlaceholderView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:BannersViewModel}">
+            <views:BannersView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:HistoryViewModel}">
+            <views:HistoryView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DevViewModel}">
+            <views:DevView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== Боковое меню ===== -->
+        <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0">
+            <DockPanel Margin="16,24">
+                <TextBlock DockPanel.Dock="Top" Text="GachaLife" FontSize="22" FontWeight="Bold"
+                           Margin="8,0,0,28"/>
+                <TextBlock DockPanel.Dock="Bottom" Text="v0.1 MVP" Style="{StaticResource MutedText}"
+                           Margin="8,0,0,0"/>
+                <StackPanel>
+                    <RadioButton Style="{StaticResource NavButton}" GroupName="Nav" Content="Задачи"
+                                 IsChecked="True" Command="{Binding NavigateCommand}" CommandParameter="Tasks"/>
+                    <RadioButton Style="{StaticResource NavButton}" GroupName="Nav" Content="Баннер"
+                                 Command="{Binding NavigateCommand}" CommandParameter="Banner"/>
+                    <RadioButton Style="{StaticResource NavButton}" GroupName="Nav"
+                                 Command="{Binding NavigateCommand}" CommandParameter="Collection">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Коллекция"/>
+                            <Border Background="#3B3578" CornerRadius="8" Padding="7,1"
+                                    Margin="10,1,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="скоро" FontSize="11"
+                                           Foreground="{StaticResource AccentHoverBrush}"/>
+                            </Border>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource NavButton}" GroupName="Nav" Content="История"
+                                 Command="{Binding NavigateCommand}" CommandParameter="History"/>
+                                        <RadioButton GroupName="Nav" Content="Разработчик"
+                                 Command="{Binding NavigateCommand}" CommandParameter="Dev">
+                        <RadioButton.Style>
+                            <Style TargetType="RadioButton" BasedOn="{StaticResource NavButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsDevMode}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </RadioButton.Style>
+                    </RadioButton>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- ===== Основная часть ===== -->
+        <Grid Grid.Column="1">
+            <ContentControl Content="{Binding CurrentPage}" Margin="36,28"/>
+
+            <!-- Баланс валюты -->
+            <Border Style="{StaticResource Card}" CornerRadius="20" Padding="16,8"
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,28,36,0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="◆" Foreground="{StaticResource GoldBrush}" FontSize="16"
+                               Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Gems}" FontWeight="SemiBold" FontSize="16"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
